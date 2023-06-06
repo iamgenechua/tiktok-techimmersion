@@ -1,5 +1,5 @@
 version: '3.9'
-services:
+services: # defines the individual containers that make up the application
   rpc-server:
     build: rpc-server
     ports:
@@ -8,7 +8,8 @@ services:
       - SERVICE_NAME=rpc-server
       - SERVICE_TAGS=rpc
     depends_on:
-      - etcd
+      - etcd # etcd service will start before rpc-server
+      - redis # redis service will start before rpc-server
   http-server:
     build: http-server
     ports:
@@ -24,3 +25,9 @@ services:
     command: ["etcd", "--advertise-client-urls", "http://etcd:2379", "--listen-client-urls", "http://0.0.0.0:2379"]
     ports:
       - "2379:2379"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
